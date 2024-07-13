@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import os
@@ -8,7 +10,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://6691ded0dc51f382e99bc852--stories-for-nolan.netlify.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -17,6 +19,7 @@ app.add_middleware(
 class StoryRequest(BaseModel):
     prompt: str
     password: str
+
 
 @app.post("/generate_story")
 async def generate_story(request: StoryRequest):
