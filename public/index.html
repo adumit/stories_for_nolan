@@ -15,8 +15,24 @@
             font-family: 'Roboto', sans-serif;
             display: grid;
             place-items: center;
-            background: url('fun_space_background.png') no-repeat center center fixed;
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
             background-size: cover;
+        }
+
+        /* Desktop background */
+        @media (min-width: 768px) {
+            body {
+                background-image: url('stories-for-nolan-desktop.png');
+            }
+        }
+
+        /* Mobile background */
+        @media (max-width: 767px) {
+            body {
+                background-image: url('stories-for-nolan-mobile.png');
+            }
         }
 
         .container {
@@ -29,8 +45,15 @@
             transition: transform 0.3s ease;
         }
 
-        .container:hover {
-            transform: perspective(1000px) rotateX(0deg);
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            transform: perspective(1000px) rotateX(5deg);
+            transition: transform 0.3s ease;
+            animation: fadeIn 4s;
         }
 
         h1 {
@@ -86,7 +109,6 @@
 
         .button-group button {
             flex: 0 0 48%;
-            /* This makes the buttons take up almost half the width each */
             padding: 10px;
             background-color: #57A0D3;
             color: white;
@@ -104,12 +126,21 @@
             background-color: #0147AB;
             box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
         }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <h1>Stories for Nolan</h1>
         <form id="storyForm">
             <textarea id="prompt" name="prompt" placeholder="Enter a story prompt" required></textarea>
             <div class="button-group">
