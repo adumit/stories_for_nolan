@@ -1,10 +1,19 @@
+import os
+import re
+
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-import os
 from anthropic import Anthropic
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+)
 
 app = FastAPI()
+logger = logging.getLogger(__name__)
 
 app.add_middleware(
     CORSMiddleware,
@@ -40,9 +49,19 @@ You're an expert child's story teller. You write short, heartfelt stories that a
 </persona>
 <task>
 Your task is to write a 500-word story for a child based on the given prompt. You may also be asked to include the child's mom or dad in the story and should do so if asked. If not prompted to include the mom or dad, you should not include them in the story.
+
+The hero's journey in your story should include one main problem that the hero faces and overcomes. The story should have a short moral at the end that is appropriate for a child. The story should be quite simple and use straightforward language.
 </task>
 <response_format>
 When you respond, first think through a brief outline of your story in a <thinking> tag. Then, write the story in a <story> tag.
+
+Here is the response format:
+<thinking>
+Your outline of the story.
+</thinking>
+<story>
+Your story.
+</story>
 </response_format>
 """
 
@@ -60,7 +79,12 @@ def get_story(prompt: str, include_mom: bool, include_dad: bool) -> str:
         human_msg += "<include_mom>You should include the child's mom in the story.</include_mom>"
     if include_dad:
         human_msg += "<include_dad>You should include the child's dad in the story.</include_dad>"
-    return get_anthropic_response(sys_message, human_msg)
+    story_response = get_anthropic_response(sys_message, human_msg)
+    try:
+        return re.findall(r"<story>(.*?)</story>", story_response, flags=re.DOTALL)[0].strip()
+    except IndexError:
+        logger.error(f"Anthropic response couldn't extract the story:\n{story_response}")
+        return "I'm sorry, I couldn't generate a story for you. Please try again."
 
 
 def get_anthropic_response(sys_message, human_msg) -> str:
