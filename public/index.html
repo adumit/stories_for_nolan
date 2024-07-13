@@ -77,6 +77,33 @@
             border-radius: 5px;
             text-align: left;
         }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .button-group button {
+            flex: 0 0 48%;
+            /* This makes the buttons take up almost half the width each */
+            padding: 10px;
+            background-color: #57A0D3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .button-group button:hover {
+            background-color: #0147AB;
+        }
+
+        .button-group button.active {
+            background-color: #0147AB;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        }
     </style>
 </head>
 
@@ -85,13 +112,30 @@
         <h1>Stories for Nolan</h1>
         <form id="storyForm">
             <textarea id="prompt" name="prompt" placeholder="Enter a story prompt" required></textarea>
+            <div class="button-group">
+                <button type="button" id="addMom">Add mom to the story</button>
+                <button type="button" id="addDad">Add dad to the story</button>
+            </div>
             <input type="password" id="password" name="password" placeholder="Enter password" required>
             <button type="submit">Generate Story</button>
         </form>
-
+        <div id="storyOutput"></div>
     </div>
 
     <script>
+        let includeMom = false;
+        let includeDad = false;
+
+        document.getElementById('addMom').addEventListener('click', function () {
+            this.classList.toggle('active');
+            includeMom = !includeMom;
+        });
+
+        document.getElementById('addDad').addEventListener('click', function () {
+            this.classList.toggle('active');
+            includeDad = !includeDad;
+        });
+
         document.getElementById('storyForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const prompt = document.getElementById('prompt').value;
@@ -104,7 +148,12 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ prompt: prompt, password: password }),
+                    body: JSON.stringify({
+                        prompt: prompt,
+                        password: password,
+                        includeMom: includeMom,
+                        includeDad: includeDad
+                    }),
                 });
                 const data = await response.json();
 
@@ -114,18 +163,12 @@
                     storyOutput.innerHTML = `<p>${data.story}</p>`;
                 }
 
-                // Show the story output div
                 storyOutput.style.display = 'block';
             } catch (error) {
                 console.error('An error occurred:', error);
                 storyOutput.innerHTML = `<p>An error occurred while generating the story. Please try again.</p>`;
                 storyOutput.style.display = 'block';
             }
-        });
-
-        // Hide the story output div when the form is reset (optional)
-        document.getElementById('storyForm').addEventListener('reset', () => {
-            document.getElementById('storyOutput').style.display = 'none';
         });
     </script>
 </body>
