@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stories for Nolan</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Roboto:wght@400;700&display=swap');
+
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            display: grid;
+            place-items: center;
+            background: url('fun_space_background.png') no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            transform: perspective(1000px) rotateX(5deg);
+            transition: transform 0.3s ease;
+        }
+
+        .container:hover {
+            transform: perspective(1000px) rotateX(0deg);
+        }
+
+        h1 {
+            font-family: 'Bangers', cursive;
+            font-size: 3rem;
+            color: #333;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        textarea,
+        input,
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        textarea {
+            height: 150px;
+            resize: vertical;
+        }
+
+        button {
+            background-color: #57A0D3;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.4s ease;
+        }
+
+        button:hover {
+            background-color: #0147AB;
+        }
+
+        #storyOutput {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Stories for Nolan</h1>
+        <form id="storyForm">
+            <textarea id="prompt" name="prompt" placeholder="Enter a story prompt" required></textarea>
+            <input type="password" id="password" name="password" placeholder="Enter password" required>
+            <button type="submit">Generate Story</button>
+        </form>
+
+    </div>
+
+    <script>
+        document.getElementById('storyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const prompt = document.getElementById('prompt').value;
+            const password = document.getElementById('password').value;
+            const storyOutput = document.getElementById('storyOutput');
+
+            try {
+                const response = await fetch('https://stories-for-nolan.onrender.com/generate_story', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt: prompt, password: password }),
+                });
+                const data = await response.json();
+
+                if (data.error) {
+                    storyOutput.innerHTML = `<p>Error: ${data.error}</p>`;
+                } else {
+                    storyOutput.innerHTML = `<p>${data.story}</p>`;
+                }
+
+                // Show the story output div
+                storyOutput.style.display = 'block';
+            } catch (error) {
+                console.error('An error occurred:', error);
+                storyOutput.innerHTML = `<p>An error occurred while generating the story. Please try again.</p>`;
+                storyOutput.style.display = 'block';
+            }
+        });
+
+        // Hide the story output div when the form is reset (optional)
+        document.getElementById('storyForm').addEventListener('reset', () => {
+            document.getElementById('storyOutput').style.display = 'none';
+        });
+    </script>
+</body>
+
+</html>
