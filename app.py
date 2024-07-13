@@ -67,8 +67,8 @@ def get_anthropic_response(sys_message, human_msg) -> str:
     client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
     message = client.messages.create(
         max_tokens=4000,
-        system=sys_message.content,
-        messages=[{"role": "user", "content": human_msg.content}],
+        system=sys_message,
+        messages=[{"role": "user", "content": human_msg}],
         model=os.environ.get("ANTHROPIC_MODEL", "claude-3-haiku-20240307"),
     )
     return message.content[0].text
