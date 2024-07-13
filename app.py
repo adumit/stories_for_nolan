@@ -23,7 +23,7 @@ async def generate_story(request: StoryRequest):
     if request.password != os.environ["PASSWORD"]:
         return {"error": "Invalid password"}
     response = get_story(request.prompt)
-    return {"story": response.choices[0].text.strip()}
+    return {"story": response.strip()}
 
 
 
